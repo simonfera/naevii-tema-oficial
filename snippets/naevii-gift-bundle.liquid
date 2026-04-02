@@ -1,0 +1,174 @@
+{% comment %}
+  Gift Bundle - Naevii
+  Usage: {% render 'naevii-gift-bundle' %}
+{% endcomment %}
+
+{% if product.handle contains 'limitless' or product.handle contains 'limtless' %}
+<style>
+  .naevii-gift-bundle {
+    margin: 24px 0;
+    font-family: inherit;
+  }
+  .naevii-bundle-row {
+    display: flex;
+    gap: 16px;
+  }
+  .naevii-bundle-item {
+    flex: 1;
+    border: 1px solid #e8e4de;
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+  }
+  .naevii-bundle-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f1efeb;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #333;
+  }
+  .naevii-item-image {
+    width: 64px;
+    height: 64px;
+    background-color: #f9f7f4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .naevii-item-image img {
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .naevii-item-title {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .naevii-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e8e4de;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #555;
+    background: #fff;
+  }
+  .strikethrough-price {
+    text-decoration: line-through;
+    color: #888;
+    margin-left: 4px;
+    font-weight: 400;
+  }
+</style>
+
+<div class="naevii-gift-bundle">
+  <div class="naevii-bundle-row">
+    <!-- Free Shipping -->
+    <div class="naevii-bundle-item">
+      <div class="naevii-bundle-badge">FREE</div>
+      <div class="naevii-item-image">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+        </svg>
+      </div>
+      <div class="naevii-item-title">Free shipping</div>
+    </div>
+
+    <!-- The Cozy Bear Gift Set -->
+    <div class="naevii-bundle-item">
+      <div class="naevii-bundle-badge">FREE <span class="strikethrough-price">€20.00</span></div>
+      <div class="naevii-item-image">
+        <span style="font-size:32px;">🐻</span>
+      </div>
+      <div class="naevii-item-title">The Cozy Bear Gift Set</div>
+      <select class="naevii-select" id="naevii-gift-variant">
+        <option value="Cream White">Cream White</option>
+        <option value="Caramel">Caramel</option>
+        <option value="Soft Grey">Soft Grey</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Add The Cozy Bear Gift Set dynamically to cart
+  // Since we don't know the exact Variant ID, we can listen for Add to Cart 
+  // Custom implementation requires querying the gift product by handle via AJAX
+  document.addEventListener('DOMContentLoaded', function() {
+    const atcButtons = document.querySelectorAll('button[name="add"], .add-to-cart-button');
+    let giftVariantId = null;
+
+    // Fetch the Cozy Bear product info
+    fetch('/products/the-cozy-bear-gift-set.js')
+      .then(res => res.json())
+      .then(product => {
+        // Find default variant
+        if (product && product.variants && product.variants.length > 0) {
+          giftVariantId = product.variants[0].id;
+        }
+
+        // Listen for selection changes
+        const select = document.getElementById('naevii-gift-variant');
+        if (select) {
+          select.addEventListener('change', function(e) {
+            const chosen = e.target.value;
+            const match = product.variants.find(v => v.title === chosen || v.option1 === chosen);
+            if (match) giftVariantId = match.id;
+          });
+        }
+      })
+      .catch(err => console.log('Gift missing or hidden'));
+
+    // Intercept Add to Cart
+    const mainForms = document.querySelectorAll('form[action="/cart/add"]');
+    mainForms.forEach(form => {
+      form.addEventListener('submit', function(e) {
+        if (!giftVariantId) return; // if no gift found, proceed normal
+        
+        e.preventDefault();
+        
+        const mainVariantId = form.querySelector('input[name="id"], select[name="id"]').value;
+        const mainQuantity = form.querySelector('input[name="quantity"]') ? form.querySelector('input[name="quantity"]').value : 1;
+
+        // Perform AJAX Add for both
+        const data = {
+          items: [
+            { id: mainVariantId, quantity: mainQuantity },
+            { id: giftVariantId, quantity: 1 }
+          ]
+        };
+
+        fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(() => {
+          // Trigger theme specific cart drawer open event or redirect
+          window.location.href = '/cart';
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          form.submit();
+        });
+      });
+    });
+  });
+</script>
+{% endif %}

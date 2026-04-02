@@ -1,0 +1,179 @@
+{% comment %}
+  Delivery Tracker - Naevii
+  Usage: {% render 'naevii-delivery-tracker' %}
+{% endcomment %}
+
+<style>
+  .naevii-delivery-container {
+    background-color: #f9f7f4;
+    border: 1px solid #e8e4de;
+    border-radius: 12px;
+    padding: 24px 20px;
+    margin: 24px 0;
+    font-family: inherit;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  .naevii-delivery-header {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .naevii-delivery-time {
+    font-weight: 700;
+    margin: 0 4px;
+  }
+  .naevii-delivery-date {
+    font-weight: 700;
+    margin: 0 4px;
+    color: #7A6E63;
+  }
+  .naevii-delivery-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .naevii-delivery-steps::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background-color: #e8e4de;
+    z-index: 1;
+  }
+  .naevii-delivery-steps::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    width: 0%; /* Will be set by JS */
+    height: 2px;
+    background-color: #7A6E63;
+    z-index: 2;
+    transition: width 1s ease;
+  }
+  .naevii-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 3;
+  }
+  .naevii-step-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid #e8e4de;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  .naevii-step.active .naevii-step-icon {
+    border-color: #7A6E63;
+    background-color: #7A6E63;
+  }
+  .naevii-step.active .naevii-step-icon svg {
+    color: #fff;
+    opacity: 1;
+  }
+  .naevii-step-icon svg {
+    width: 12px;
+    height: 12px;
+    color: transparent;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .naevii-step-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .naevii-step.active .naevii-step-label {
+    color: #333;
+    font-weight: 600;
+  }
+</style>
+
+<div class="naevii-delivery-container" id="naevii-delivery-tracker">
+  <div class="naevii-delivery-header">
+    Order in <span class="naevii-delivery-time" id="naevii-timer">10:00</span> for estimated delivery by <span class="naevii-delivery-date" id="naevii-date">...</span>
+  </div>
+
+  <div class="naevii-delivery-steps">
+    <div class="naevii-step active">
+      <div class="naevii-step-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      </div>
+      <span class="naevii-step-label">Order in</span>
+    </div>
+    <div class="naevii-step">
+      <div class="naevii-step-icon"></div>
+      <span class="naevii-step-label">Purchased</span>
+    </div>
+    <div class="naevii-step">
+      <div class="naevii-step-icon"></div>
+      <span class="naevii-step-label">Dispatched</span>
+    </div>
+    <div class="naevii-step">
+      <div class="naevii-step-icon"></div>
+      <span class="naevii-step-label">Delivered</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Timer Logic
+    let minutes = 9;
+    let seconds = 59;
+    const timerEl = document.getElementById('naevii-timer');
+    
+    function updateTimer() {
+      if (seconds === 0) {
+        if (minutes === 0) {
+          minutes = 10; // reset
+        } else {
+          minutes--;
+        }
+        seconds = 59;
+      } else {
+        seconds--;
+      }
+      
+      const m = minutes.toString();
+      const s = seconds.toString().padStart(2, '0');
+      if (timerEl) timerEl.textContent = m + ':' + s;
+    }
+    setInterval(updateTimer, 1000);
+
+    // Date Logic (Add 7-10 business days)
+    function addBusinessDays(date, days) {
+      let result = new Date(date);
+      let added = 0;
+      while (added < days) {
+        result.setDate(result.getDate() + 1);
+        if (result.getDay() !== 0 && result.getDay() !== 6) {
+          added++;
+        }
+      }
+      return result;
+    }
+
+    const deliveryDate = addBusinessDays(new Date(), 9);
+    const dateOptions = { month: 'short', day: 'numeric' };
+    const dateEl = document.getElementById('naevii-date');
+    if (dateEl) {
+      dateEl.textContent = deliveryDate.toLocaleDateString('en-US', dateOptions);
+    }
+  });
+</script>

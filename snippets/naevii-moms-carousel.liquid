@@ -1,0 +1,130 @@
+{% comment %}
+  Real Moms Carousel - Naevii
+  Usage: {% render 'naevii-moms-carousel' %}
+{% endcomment %}
+
+<style>
+  .naevii-carousel-container {
+    margin: 64px 0;
+    font-family: inherit;
+    width: 100%;
+  }
+  .naevii-carousel-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 32px;
+    font-weight: 500;
+  }
+  .naevii-carousel-grid {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+  .naevii-carousel-grid::-webkit-scrollbar {
+    display: none;
+  }
+  
+  @media (min-width: 768px) {
+    .naevii-carousel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      overflow-x: visible;
+    }
+  }
+
+  .naevii-video-item {
+    position: relative;
+    flex-shrink: 0;
+    width: 240px;
+    height: 480px;
+    scroll-snap-align: center;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #e8e4de;
+  }
+  @media (min-width: 768px) {
+    .naevii-video-item {
+      width: 100%;
+      height: 480px;
+    }
+  }
+
+  .naevii-video-element {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .naevii-play-btn {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .naevii-play-btn:hover {
+    background: rgba(0,0,0,0.6);
+  }
+  .naevii-play-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+</style>
+
+<div class="naevii-carousel-container">
+  <h2 class="naevii-carousel-title">Real moms. Real babies. Real results</h2>
+  
+  <div class="naevii-carousel-grid">
+    <!-- Video 1 -->
+    <div class="naevii-video-item">
+      <video class="naevii-video-element" src="https://cdn.shopify.com/videos/c/vp/7641eac2d5c5443888a6d7bbbeb793cd/7641eac2d5c5443888a6d7bbbeb793cd.HD-1080p-7.2Mbps-79706110.mp4" autoplay loop muted playsinline></video>
+      <button class="naevii-play-btn" onclick="togglePlay(this)">
+        <svg class="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+    </div>
+
+    <!-- Video 2 -->
+    <div class="naevii-video-item">
+      <video class="naevii-video-element" src="https://www.minuvy.com/cdn/shop/videos/c/vp/6d4f5a1a4f024bc9acb6c5f8c2202891/6d4f5a1a4f024bc9acb6c5f8c2202891.HD-1080p-3.3Mbps-68120892.mp4" autoplay loop muted playsinline></video>
+      <button class="naevii-play-btn" onclick="togglePlay(this)">
+        <svg class="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+    </div>
+
+    <!-- Video 3 -->
+    <div class="naevii-video-item">
+      <video class="naevii-video-element" src="https://cdn.shopify.com/videos/c/vp/7641eac2d5c5443888a6d7bbbeb793cd/7641eac2d5c5443888a6d7bbbeb793cd.HD-1080p-7.2Mbps-79706110.mp4" autoplay loop muted playsinline></video>
+      <button class="naevii-play-btn" onclick="togglePlay(this)">
+        <svg class="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePlay(btn) {
+    var video = btn.previousElementSibling;
+    if (video.paused) {
+      video.play();
+      btn.innerHTML = '<svg class="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+    } else {
+      video.pause();
+      btn.innerHTML = '<svg class="icon-play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    }
+  }
+</script>
