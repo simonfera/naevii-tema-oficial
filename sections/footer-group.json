@@ -13,7 +13,6 @@
   "sections": {
     "naevii_footer": {
       "type": "naevii-footer",
-      "disabled": true,
       "settings": {}
     }
   },
