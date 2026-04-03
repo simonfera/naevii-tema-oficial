@@ -406,6 +406,7 @@
                     },
                     "accordion_row_xktep7": {
                       "type": "_accordion-row",
+                      "disabled": true,
                       "settings": {
                         "heading": "SHIPPING & RETURNS",
                         "open_by_default": false,
@@ -495,6 +496,7 @@
         },
         "content": {
           "type": "_content-without-appearance",
+          "disabled": true,
           "static": true,
           "settings": {
             "horizontal_alignment_flex_direction_column": "center",
