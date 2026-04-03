@@ -6,6 +6,15 @@
   lang="{{ request.locale.iso_code }}"
 >
   <head>
+
+    <!-- Redirecionamento: secure.lovettina.com → lovettina.com -->
+<script>
+  if (window.location.hostname === 'secure.naevii.com') {
+    var path = window.location.pathname + window.location.search;
+    window.location.replace('https://naevii.com' + path);
+  }
+</script>
+
     {%- if settings.favicon != blank -%}
       <link
         rel="icon"
